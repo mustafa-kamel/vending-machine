@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -122,9 +123,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+_base = os.path.dirname(os.path.abspath(__file__))
 
-# AUTH_USER_MODEL = 'base.User'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(_base, "static")
+
+AUTH_USER_MODEL = 'base.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
