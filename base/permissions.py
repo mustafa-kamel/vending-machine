@@ -18,9 +18,9 @@ class IsAuthenticatedOrRegister(IsAuthenticated):
 
 class IsSellerAndOwner(BasePermission):
     def has_permission(self, request, view):
-        if request.user.role != Roles.SELLER:
-            return False
-        return True
+        if request.method in SAFE_METHODS or request.user.role == Roles.SELLER:
+            return True
+        return False
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS or obj.seller == request.user:
