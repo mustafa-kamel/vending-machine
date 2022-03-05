@@ -65,6 +65,10 @@ class TestUserAPI(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['user']['role'], Roles.BUYER)
 
+    def test_anonymous_user_cannot_get_users_data(self):
+        response = self.client.get(reverse('base:users-list'))
+        self.assertEqual(response.status_code, 401)
+
     def test_user_cannot_get_all_users_data(self):
         self.set_client_credentials(self.buyer_data)
         response = self.client.get(reverse('base:users-list'))

@@ -97,6 +97,11 @@ class TestProductAPI(TestCase):
         self.assertEqual(response.data['product']['price'], 5)
         self.assertEqual(response.data['product']['available'], 6)
 
+    def test_anonymous_user_can_get_all_products_data(self):
+        response = self.client.get(reverse('base:products-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['products']), 2)
+
     def test_seller_can_get_all_products_data(self):
         self.set_client_credentials(self.seller1_data)
         response = self.client.get(reverse('base:products-list'))
