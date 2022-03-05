@@ -82,3 +82,15 @@ class TestUserAPI(TestCase):
         response = self.client.get(
             reverse('base:users-detail', args=[self.buyer.id]))
         self.assertEqual(response.status_code, 404)
+
+    def test_user_can_delete_his_data(self):
+        self.set_client_credentials(self.seller_data)
+        response = self.client.delete(
+            reverse('base:users-detail', args=[self.seller.id]))
+        self.assertEqual(response.status_code, 204)
+
+    def test_user_cannot_delete_another_user_data(self):
+        self.set_client_credentials(self.seller_data)
+        response = self.client.delete(
+            reverse('base:users-detail', args=[self.buyer.id]))
+        self.assertEqual(response.status_code, 404)
