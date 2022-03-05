@@ -22,7 +22,9 @@ class IsAuthenticatedOrRegister(IsAuthenticated):
 
 class IsSellerAndOwner(BasePermission):
     def has_permission(self, request, view):
-        if request.method in SAFE_METHODS or request.user.role == Roles.SELLER:
+        if (request.method in SAFE_METHODS or request.user.role == Roles.SELLER
+                or (view.action == 'buy' and request.user.role == Roles.BUYER
+                    )):
             return True
         return False
 

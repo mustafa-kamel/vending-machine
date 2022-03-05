@@ -143,3 +143,32 @@ class TestProductAPI(TestCase):
         response = self.client.delete(
             reverse('base:products-detail', args=[self.product2.id]))
         self.assertEqual(response.status_code, 403)
+
+    def test_buyer_can_buy_product(self):
+        self.set_client_credentials(self.buyer_data)
+        self.buyer.deposit = 100
+        self.buyer.save()
+        response = self.client.post(
+            reverse('base:products-buy'),
+            {'product': self.product2.id, 'amount': 3})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 45)
+        self.assertEqual(response.data['change'], 50)
+
+    def test_buyer_can_buy_product_no_change(self):
+        self.set_client_credentials(self.buyer_data)
+        self.buyer.deposit = 48
+        self.buyer.save()
+        response = self.client.post(
+            reverse('base:products-buy'),
+            {'product': self.product2.id, 'amount': 3})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 45)
+        self.assertFalse('change' in response.data)
+
+    def test_buyer_cannot_buy_product_no_enough_balance(self):
+        self.set_client_credentials(self.buyer_data)
+        response = self.client.post(
+            reverse('base:products-buy'),
+            {'product': self.product2.id, 'amount': 3})
+        self.assertEqual(response.status_code, 400)
