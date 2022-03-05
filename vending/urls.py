@@ -25,5 +25,5 @@ from base import urls as base_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', TokenObtainPairView.as_view(), name='login'),
-    path("/", include(base_urls, namespace='base')),
+    path("", include(base_urls, namespace='base')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
