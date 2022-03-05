@@ -88,7 +88,7 @@ class TestProductAPI(TestCase):
             {'price': 5, 'available': 6})
         self.assertEqual(response.status_code, 403)
 
-    def test_edit_product(self):
+    def test_seller_can_edit_his_product(self):
         self.set_client_credentials(self.seller1_data)
         response = self.client.patch(
             reverse('base:products-detail', args=[self.product1.id]),
@@ -96,3 +96,45 @@ class TestProductAPI(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['product']['price'], 5)
         self.assertEqual(response.data['product']['available'], 6)
+
+    def test_seller_can_get_all_products_data(self):
+        self.set_client_credentials(self.seller1_data)
+        response = self.client.get(reverse('base:products-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['products']), 2)
+
+    def test_buyer_can_get_all_products_data(self):
+        self.set_client_credentials(self.buyer_data)
+        response = self.client.get(reverse('base:products-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['products']), 2)
+
+    def test_seller_can_get_single_product_data(self):
+        self.set_client_credentials(self.seller1_data)
+        response = self.client.get(
+            reverse('base:products-detail', args=[self.product2.id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_buyer_can_get_single_product_data(self):
+        self.set_client_credentials(self.buyer_data)
+        response = self.client.get(
+            reverse('base:products-detail', args=[self.product1.id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_seller_can_delete_his_product(self):
+        self.set_client_credentials(self.seller1_data)
+        response = self.client.delete(
+            reverse('base:products-detail', args=[self.product1.id]))
+        self.assertEqual(response.status_code, 204)
+
+    def test_seller_cannot_delete_not_his_product(self):
+        self.set_client_credentials(self.seller1_data)
+        response = self.client.delete(
+            reverse('base:products-detail', args=[self.product2.id]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_buyer_cannot_delete_product(self):
+        self.set_client_credentials(self.buyer_data)
+        response = self.client.delete(
+            reverse('base:products-detail', args=[self.product2.id]))
+        self.assertEqual(response.status_code, 403)
