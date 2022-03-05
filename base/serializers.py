@@ -1,6 +1,7 @@
-from dynamic_rest.serializers import (DynamicModelSerializer)
+from dynamic_rest.serializers import (DynamicModelSerializer,
+                                      DynamicRelationField)
 
-from .models import User
+from .models import User, Product
 
 
 class UserSerializer(DynamicModelSerializer):
@@ -11,3 +12,11 @@ class UserSerializer(DynamicModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+
+
+class ProductSerializer(DynamicModelSerializer):
+    seller = DynamicRelationField(UserSerializer, embed=True)
+
+    class Meta:
+        model = Product
+        fields = '__all__'
