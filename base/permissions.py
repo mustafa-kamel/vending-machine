@@ -1,4 +1,5 @@
-from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.permissions import (
+    BasePermission, IsAuthenticated, SAFE_METHODS)
 from .models import Roles
 
 
@@ -10,9 +11,9 @@ class IsAuthenticatedOrRegister(IsAuthenticated):
             IsAuthenticatedOrRegister, self).has_permission(request, view)
 
     def has_object_permission(self, request, view, obj):
-        if obj.id != request.user.id:
-            return False
-        return True
+        if request.method in SAFE_METHODS or obj.id == request.user.id:
+            return True
+        return False
 
 
 class IsSellerAndOwner(BasePermission):
@@ -22,6 +23,6 @@ class IsSellerAndOwner(BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
-        if obj.seller != request.user:
-            return False
-        return True
+        if request.method in SAFE_METHODS or obj.seller == request.user:
+            return True
+        return False
