@@ -18,10 +18,12 @@ from django.urls import path
 from django.conf.urls import include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from base import urls as base_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("base/", include(base_urls, namespace='base')),
+    path('auth/', TokenObtainPairView.as_view(), name='login'),
+    path("/", include(base_urls, namespace='base')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
