@@ -27,9 +27,21 @@ class UserViewSet(DynamicModelViewSet):
         if deposit not in self.allowed_deposits:
             raise ParseError(
                 {"detail": "Deposits allowed are: %s."
-                 % ''.join(map(lambda x: str(x), self.allowed_deposits))})
-            request.user.deposit += deposit
-            request.user.save()
+                 % ', '.join(map(lambda x: str(x), self.allowed_deposits))})
+        request.user.deposit += deposit
+        request.user.save()
+        return Response(self.get_serializer(request.user).data)
+
+    @action(methods=['get'], detail=False)
+    def reset(self, request, *args, **kwargs):
+        if request.user.deposit not in self.allowed_deposits:
+            deposit = 0
+            for val in self.allowed_deposits:
+                if request.user.deposit < val:
+                    break
+                deposit = val
+            request.user.deposit = deposit
+        request.user.save()
         return Response(self.get_serializer(request.user).data)
 
 

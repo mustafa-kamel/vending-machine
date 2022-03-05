@@ -7,7 +7,8 @@ class IsAuthenticatedOrRegister(IsAuthenticated):
     def has_permission(self, request, view):
         if request.method == 'POST' and view.action != 'deposit':
             return True
-        if (request.user.is_authenticated and view.action == 'deposit'
+        if (request.user.is_authenticated
+            and view.action in ['deposit', 'reset']
                 and request.user.role != Roles.BUYER):
             return False
         return super(

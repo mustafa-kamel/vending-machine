@@ -109,8 +109,8 @@ class TestUserAPI(TestCase):
         response = self.client.post(
             reverse('base:users-deposit'), {'deposit': 50})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['user']
-                         ['deposit'] + 50, self.buyer.deposit + 50)
+        self.assertEqual(
+            response.data['user']['deposit'], self.buyer.deposit + 50)
 
     def test_buyer_cannot_add_unallowed_deposit(self):
         self.set_client_credentials(self.buyer_data)
@@ -122,4 +122,17 @@ class TestUserAPI(TestCase):
         self.set_client_credentials(self.seller_data)
         response = self.client.post(
             reverse('base:users-deposit'), {'deposit': 50})
+        self.assertEqual(response.status_code, 403)
+
+    def test_buyer_can_reset_his_deposit(self):
+        self.set_client_credentials(self.buyer_data)
+        self.buyer.deposit = 51
+        self.buyer.save()
+        response = self.client.get(reverse('base:users-reset'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['user']['deposit'], 50)
+
+    def test_seller_cannot_reset_his_deposit(self):
+        self.set_client_credentials(self.seller_data)
+        response = self.client.get(reverse('base:users-reset'))
         self.assertEqual(response.status_code, 403)
