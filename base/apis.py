@@ -13,6 +13,9 @@ class UserViewSet(DynamicModelViewSet):
     queryset = User.objects.all()
     ordering = ['-date_joined']
 
+    def get_queryset(self):
+        return self.queryset.filter(pk=self.request.user.pk)
+
 
 class ProductViewSet(DynamicModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly, IsSellerAndOwner,)
