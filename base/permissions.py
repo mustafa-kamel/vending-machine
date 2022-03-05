@@ -5,8 +5,11 @@ from .models import Roles
 
 class IsAuthenticatedOrRegister(IsAuthenticated):
     def has_permission(self, request, view):
-        if request.method == 'POST':
+        if request.method == 'POST' and view.action != 'deposit':
             return True
+        if (request.user.is_authenticated and view.action == 'deposit'
+                and request.user.role != Roles.BUYER):
+            return False
         return super(
             IsAuthenticatedOrRegister, self).has_permission(request, view)
 
