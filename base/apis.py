@@ -34,7 +34,10 @@ class UserViewSet(DynamicModelViewSet):
 
     @action(methods=['post'], detail=False)
     def deposit(self, request, *args, **kwargs):
-        deposit = int(request.data.get('deposit'))
+        deposit = request.data.get('deposit')
+        if not deposit:
+            raise ParseError({'deposit': 'This field is required.'})
+        deposit = int(deposit)
         if deposit not in allowed_deposits:
             raise ParseError(
                 {"detail": "Deposits allowed are: %s."
@@ -60,15 +63,16 @@ class ProductViewSet(DynamicModelViewSet):
     ordering = ['name']
 
     def create(self, request):
-        request.data._mutable = True
+        if hasattr(request.data, '_mutable'):
+            request.data._mutable = True
         request.data['seller'] = request.user
         return super(ProductViewSet, self).create(request)
 
     def validate_request_data(self):
         if 'product' not in self.request.data:
-            raise ValidationError({'product': 'This fields is required.'})
+            raise ValidationError({'product': 'This field is required.'})
         if 'amount' not in self.request.data:
-            raise ValidationError({'amount': 'This fields is required.'})
+            raise ValidationError({'amount': 'This field is required.'})
 
     def check_product_amount_and_price(self, product):
         amount = int(self.request.data.get('amount'))
