@@ -43,7 +43,7 @@ pip install -r requirements.txt
 ```
 6. Run the migrations.
 ```bash
-./manage.py runserver
+./manage.py migrate
 ```
 7. Run the local server.
 ```bash
